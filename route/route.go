@@ -16,6 +16,16 @@ type Repository struct {
 	DB *gorm.DB
 }
 
+// sets up all the routes
+func (r *Repository) SetupRoutes(app *fiber.App) {
+	api := app.Group("/api")
+	api.Post("/createBook", r.createBook)
+	api.Delete("/deleteBook/:id", r.DeleteBook)
+	api.Patch("/updateBook/:id", r.updateBook)
+	api.Get("/getBook/:id", r.getBookByID)
+	api.Get("/allBooks", r.getAllBooks)
+}
+
 // createBook function
 func (r *Repository) createBook(context *fiber.Ctx) error {
 	book := schema.Book{}
@@ -146,14 +156,4 @@ func (r *Repository) getAllBooks(context *fiber.Ctx) error {
 		"message":  "success",
 		"allBooks": books,
 	})
-}
-
-// sets up all the routes
-func (r *Repository) SetupRoutes(app *fiber.App) {
-	api := app.Group("/api")
-	api.Post("/createBook", r.createBook)
-	api.Delete("/deleteBook/:id", r.DeleteBook)
-	api.Patch("/updateBook/:id", r.updateBook)
-	api.Get("/getBook/:id", r.getBookByID)
-	api.Get("/allBooks", r.getAllBooks)
 }
