@@ -1,0 +1,8 @@
+# .air.toml
+[build]
+bin = "tmp/main"        # Path to the binary file
+cmd = "go run main.go"  # Command to run your application
+include_dir = ["." ]   # Directories to watch for changes
+
+[log]
+time = "2006-01-02 15:04:05"
