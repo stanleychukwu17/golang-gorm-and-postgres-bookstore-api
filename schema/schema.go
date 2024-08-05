@@ -8,7 +8,7 @@ import (
 
 // User model
 type User struct {
-	ID        uint16    `gorm:"primaryKey;type:smallint" json:"id"`
+	ID        uint16    `gorm:"primaryKey;type:smallint" json:"id,omitempty"`
 	Username  string    `gorm:"uniqueIndex;type:varchar(100);not null" json:"username,omitempty"`
 	Email     string    `gorm:"uniqueIndex;type:varchar(100);not null" json:"email,omitempty"`
 	Password  string    `gorm:"type:varchar(100);not null" json:"password,omitempty"`
@@ -42,7 +42,7 @@ type Product struct {
 
 // Book model
 type Book struct {
-	ID        uint16    `gorm:"primaryKey;type:smallint" json:"id"`
+	ID        uint16    `gorm:"primaryKey;type:smallint" json:"id,omitempty"`
 	Author    string    `gorm:"type:varchar(100);not null" json:"author,omitempty"`
 	Publisher string    `gorm:"type:varchar(100);not null" json:"publisher,omitempty"`
 	Title     string    `gorm:"type:varchar(100);not null" json:"title,omitempty"`
