@@ -16,8 +16,8 @@ type Repository struct {
 	DB *gorm.DB
 }
 
-// CreateBook function
-func (r *Repository) CreateBook(context *fiber.Ctx) error {
+// createBook function
+func (r *Repository) createBook(context *fiber.Ctx) error {
 	book := schema.Book{}
 
 	// Parse the request body & bind it to the book struct
@@ -92,7 +92,7 @@ func (r *Repository) updateBook(context *fiber.Ctx) error {
 	// Parse the request body
 	if err := context.BodyParser(&book); err != nil {
 		return context.Status(http.StatusBadRequest).JSON(map[string]interface{}{
-			"message": err.Error(),
+			"message": "Body parser error: " + err.Error(),
 		})
 	}
 
@@ -108,12 +108,52 @@ func (r *Repository) updateBook(context *fiber.Ctx) error {
 	})
 }
 
+func (r *Repository) getBookByID(context *fiber.Ctx) error {
+	idStr := context.Params("id")
+	book_id, err := strconv.ParseUint(idStr, 10, 16)
+	if err != nil {
+		return context.Status(http.StatusBadRequest).JSON(map[string]interface{}{
+			"message": "Invalid ID received",
+		})
+	}
+
+	// get this record
+	book := schema.Book{}
+	result := r.DB.Raw("SELECT author, title FROM books WHERE id = ?", book_id).Scan(&book)
+	if result.Error != nil {
+		return context.Status(http.StatusNotFound).JSON(map[string]interface{}{
+			"message": "Fetching record failed: " + result.Error.Error(),
+		})
+	}
+
+	return context.Status(http.StatusOK).JSON(fiber.Map{
+		"message": "success",
+		"book":    book,
+	})
+}
+
+func (r *Repository) getAllBooks(context *fiber.Ctx) error {
+	books := []schema.Book{}
+
+	allBooks := r.DB.Raw("SELECT * FROM books ORDER BY id ASC").Scan(&books)
+	if allBooks.Error != nil {
+		return context.Status(http.StatusInternalServerError).JSON(fiber.Map{
+			"message": "Error fetching all books: " + allBooks.Error.Error(),
+		})
+	}
+
+	return context.Status(http.StatusOK).JSON(fiber.Map{
+		"message":  "success",
+		"allBooks": books,
+	})
+}
+
 // sets up all the routes
 func (r *Repository) SetupRoutes(app *fiber.App) {
 	api := app.Group("/api")
-	api.Post("/createBook", r.CreateBook)
+	api.Post("/createBook", r.createBook)
 	api.Delete("/deleteBook/:id", r.DeleteBook)
 	api.Patch("/updateBook/:id", r.updateBook)
-	// api.get("/getBook/:id", r.GetBookByID)
-	// api.get("/allBooks", r.GetAllBooks)
+	api.Get("/getBook/:id", r.getBookByID)
+	api.Get("/allBooks", r.getAllBooks)
 }
