@@ -5,14 +5,15 @@ import (
 )
 
 // --START-- sample objects
+
 // User model
 type User struct {
-	ID        uint   `gorm:"primaryKey"`
-	Username  string `gorm:"uniqueIndex;not null"`
-	Email     string `gorm:"uniqueIndex;not null"`
-	Password  string `gorm:"not null"`
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	ID        uint16    `gorm:"primaryKey;type:smallint" json:"id"`
+	Username  string    `gorm:"uniqueIndex;type:varchar(100);not null" json:"username,omitempty"`
+	Email     string    `gorm:"uniqueIndex;type:varchar(100);not null" json:"email,omitempty"`
+	Password  string    `gorm:"type:varchar(100);not null" json:"password,omitempty"`
+	CreatedAt time.Time `json:"created_at,omitempty"`
+	UpdatedAt time.Time `json:"updated_at,omitempty"`
 	// One-to-Many relationship with Orders
 	Orders []Order
 }
@@ -20,7 +21,6 @@ type User struct {
 // Order model
 type Order struct {
 	ID          uint    `gorm:"primaryKey"`
-	OrderNumber string  `gorm:"uniqueIndex;not null"`
 	TotalAmount float64 `gorm:"not null"`
 	UserID      uint    // Foreign key to User
 	CreatedAt   time.Time
@@ -38,18 +38,13 @@ type Product struct {
 	UpdatedAt   time.Time
 }
 
-// OrderProduct model (Join table for many-to-many relationship)
-type OrderProduct struct {
-	OrderID   uint `gorm:"primaryKey"`
-	ProductID uint `gorm:"primaryKey"`
-	Quantity  int  `gorm:"not null"`
-}
-
 //--EMD--
 
+// Book model
 type Book struct {
-	ID        int    `gorm:"primaryKey" json:"id"`
-	Author    string `gorm:"type:varchar(100);not null" json:"author"`
-	Publisher string `gorm:"type:varchar(100);not null" json:"publisher"`
-	Title     string `gorm:"type:varchar(100);not null" json:"title"`
+	ID        uint16    `gorm:"primaryKey;type:smallint" json:"id"`
+	Author    string    `gorm:"type:varchar(100);not null" json:"author,omitempty"`
+	Publisher string    `gorm:"type:varchar(100);not null" json:"publisher,omitempty"`
+	Title     string    `gorm:"type:varchar(100);not null" json:"title,omitempty"`
+	CreatedAt time.Time `json:"created_at,omitempty"`
 }
